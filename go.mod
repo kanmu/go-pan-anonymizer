@@ -1,4 +1,4 @@
-module github.com/kanmu/pan-anonymizer
+module github.com/kanmu/go-pan-anonymizer
 
 go 1.19
 
