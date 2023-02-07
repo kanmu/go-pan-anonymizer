@@ -7,17 +7,22 @@ import (
 type Anonymizer struct {
 	transform.NopResetter
 	testPan func([]byte) bool
+	mask    byte
 }
 
 func DefaultAnonymizer() *Anonymizer {
 	return &Anonymizer{
-		testPan: TestLuhn,
+		NopResetter: transform.NopResetter{},
+		testPan:     TestLuhn,
+		mask:        '*',
 	}
 }
 
-func NewAnonymizer(test func([]byte) bool) *Anonymizer {
+func NewAnonymizer(mask byte, test func([]byte) bool) *Anonymizer {
 	return &Anonymizer{
-		testPan: test,
+		NopResetter: transform.NopResetter{},
+		testPan:     test,
+		mask:        mask,
 	}
 }
 
@@ -39,11 +44,9 @@ func (a *Anonymizer) Transform(dst, src []byte, atEOF bool) (int, int, error) {
 			if a.testPan(src[mf : i+1]) {
 				if nSrc <= mf {
 					nDst += copy(dst[nDst:], src[nSrc:mf])
-					nDst += copy(dst[nDst:], "****************")
-				} else {
-					for ; nDst < i; nDst++ {
-						dst[nDst] = '*'
-					}
+				}
+				for ; nDst <= i; nDst++ {
+					dst[nDst] = a.mask
 				}
 				nSrc = nDst
 			}
