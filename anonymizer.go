@@ -4,29 +4,29 @@ import (
 	"golang.org/x/text/transform"
 )
 
-type Anonymizer struct {
+type anonymizer struct {
 	transform.NopResetter
 	testPan func([]byte) bool
 	mask    byte
 }
 
-func DefaultAnonymizer() *Anonymizer {
-	return &Anonymizer{
+func DefaultAnonymizer() *anonymizer {
+	return &anonymizer{
 		NopResetter: transform.NopResetter{},
 		testPan:     TestLuhn,
 		mask:        '*',
 	}
 }
 
-func NewAnonymizer(mask byte, test func([]byte) bool) *Anonymizer {
-	return &Anonymizer{
+func NewAnonymizer(mask byte, test func([]byte) bool) *anonymizer {
+	return &anonymizer{
 		NopResetter: transform.NopResetter{},
 		testPan:     test,
 		mask:        mask,
 	}
 }
 
-func (a *Anonymizer) Transform(dst, src []byte, atEOF bool) (int, int, error) {
+func (a *anonymizer) Transform(dst, src []byte, atEOF bool) (int, int, error) {
 	n := 0
 	nDst := 0
 	nSrc := 0
